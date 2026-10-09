@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "docvault"
+version = "0.1.0"
+description = "macOS CLI for verified, portable document encryption with two independent passwords"
+readme = "README.md"
+requires-python = ">=3.12"
+license = "MIT AND CC-BY-4.0"
+license-files = ["LICENSE", "THIRD_PARTY_NOTICES.md"]
+authors = [{name = "Evgeny Trushin"}]
+keywords = ["encryption", "documents", "7zip", "macos", "backup"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Operating System :: MacOS :: MacOS X",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Security :: Cryptography",
+    "Topic :: System :: Archiving",
+]
+dependencies = ["pynacl>=1.5", "zxcvbn==4.5.0"]
+
+[project.urls]
+Homepage = "https://github.com/evgeny-trushin/DocVault"
+Repository = "https://github.com/evgeny-trushin/DocVault"
+Issues = "https://github.com/evgeny-trushin/DocVault/issues"
+Documentation = "https://github.com/evgeny-trushin/DocVault#readme"
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+demo = ["pillow>=10"]
+
+# No console-script entry point on purpose: use bin/docvault, which runs
+# Python in isolated mode.
+
+[tool.setuptools]
+packages = ["docvault"]
+
+[tool.setuptools.package-data]
+docvault = ["data/*.txt"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

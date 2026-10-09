@@ -1,0 +1,31 @@
+#!/bin/sh
+# Controlled launcher. Python's isolated mode (-I) ignores PYTHON* environment
+# variables and keeps the current directory, the script directory and the user
+# site-packages off sys.path, so only the package installed in this project's
+# virtual environment is imported.
+set -eu
+if [ "$(/usr/bin/id -u)" -eq 0 ]; then
+    printf '%s\n' 'docvault: sudo requires the root-owned launcher; run ./install.sh first' >&2
+    exit 1
+fi
+script=$0
+links=0
+while [ -L "$script" ]; do
+    links=$((links + 1))
+    if [ "$links" -gt 40 ]; then
+        printf '%s\n' 'docvault: too many launcher symlinks' >&2
+        exit 1
+    fi
+    parent=$(cd -P "$(dirname "$script")" && pwd)
+    script=$(readlink "$script")
+    case "$script" in
+        /*) ;;
+        *) script=$parent/$script ;;
+    esac
+done
+here=$(cd -P "$(dirname "$script")/.." && pwd)
+if [ ! -x "$here/.venv/bin/python" ]; then
+    printf '%s\n' 'docvault: Python environment is missing; run install.sh from the project folder' >&2
+    exit 1
+fi
+exec "$here/.venv/bin/python" -I -m docvault "$@"

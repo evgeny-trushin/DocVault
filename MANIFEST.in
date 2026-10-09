@@ -1,0 +1,8 @@
+include LICENSE THIRD_PARTY_NOTICES.md CONTRIBUTING.md SECURITY.md CHANGELOG.md
+include install.sh uninstall.sh pyrightconfig.json
+recursive-include bin *
+recursive-include scripts *.py
+recursive-include tests *.py
+recursive-include docs *.md
+recursive-include docs/media *.gif *.mp4 *.json
+global-exclude __pycache__ *.py[cod] .DS_Store

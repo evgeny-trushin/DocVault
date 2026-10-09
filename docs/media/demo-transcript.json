@@ -1,0 +1,141 @@
+[
+  {
+    "title": "Install locally",
+    "note": "No sudo needed. Keep the checkout and its .venv in place.",
+    "command": "./install.sh --bin-dir \"$PWD/.demo/bin\"\nexport PATH=\"$PWD/.demo/bin:$PATH\"",
+    "events": [
+      "Using CPython ",
+      "3.12",
+      ".",
+      "13",
+      "\r\n",
+      "Creating virtual environment at: ",
+      ".venv\r\n",
+      "Activate with: source .venv/bin/activate",
+      "\r\n",
+      "Resolved 5 packages in 502ms\r\n",
+      "   Building docvault @ file://$PWD\r\n",
+      "      Built docvault @ file://$PWD\r\n",
+      "Prepared 5 packages in 804ms\r\n",
+      "Installed 5 packages in 8ms\r\n",
+      " + ",
+      "cffi",
+      "==2.",
+      "1.1\r\n +",
+      " docvault",
+      "==0",
+      ".",
+      "1",
+      ".0 (from file:",
+      "//$PWD)\r\n + ",
+      "pycparser==",
+      "3",
+      ".",
+      "11",
+      "\r\n",
+      " ",
+      "+",
+      " ",
+      "pynacl",
+      "==1.6.",
+      "2\r\n +",
+      " ",
+      "zxcvbn==4",
+      ".5.",
+      "0",
+      "\r\n",
+      "docvault 0.1.0\r\n",
+      "Installed $PWD/.demo/bin/docvault\r\n",
+      "Installed $PWD/.demo/bin/encrypt.sh\r\n",
+      "Installed $PWD/.demo/bin/decrypt.sh\r\n"
+    ],
+    "step": 1
+  },
+  {
+    "title": "Create a local key",
+    "note": "Choose a strong password. Password input stays hidden.",
+    "command": "mkdir -m 700 .demo/key\ndocvault init --key .demo/key/key",
+    "events": [
+      "Local key password: ",
+      "\r\n",
+      "Confirm local key password: ",
+      "\r\n",
+      "Local 7z key password, pessimistic estimate:\r\n  guesses needed   9.5 × 10^28 (weakest of three attacks)\r\n  attacker speed   1.1 × 10^8 per second (El Capitan, TOP500 June 2026)\r\n  expected time    27 trillion years\r\n",
+      "Encrypted key created: .demo/key/key. Back it up with your archives.\r\n"
+    ],
+    "step": 2
+  },
+  {
+    "title": "Start with sample documents",
+    "note": "This recording uses two disposable text files.",
+    "command": "ls Documents",
+    "events": [
+      "invoice.txt\tnotes.txt\r\n"
+    ],
+    "step": 2
+  },
+  {
+    "title": "Encrypt and verify",
+    "note": "Use two independent passwords. --keep retains the originals.",
+    "command": "encrypt.sh Documents --key .demo/key/key --keep --key-hint \"\" --outer-hint \"\"",
+    "events": [
+      "Password hints are public in the archive filename. Do not enter passwords here. Leave a hint empty to skip it.\r\nThe local 7z key password must be different from the 7z password. If both layers share one password, cracking the 7z password opens the whole bundle, and anyone you give the 7z password to also has your local key password.\r\n",
+      "Local 7z key password: ",
+      "\r\n",
+      "Unlocking local key with Argon2id…\r\n",
+      "Local 7z key password, pessimistic estimate:\r\n  guesses needed   9.5 × 10^28 (weakest of three attacks)\r\n  attacker speed   1.1 × 10^8 per second (El Capitan, TOP500 June 2026)\r\n  expected time    27 trillion years\r\n",
+      "Enter 7z password: ",
+      "\r\n",
+      "Confirm 7z password: ",
+      "\r\n",
+      "7z password, pessimistic estimate:\r\n  guesses needed   6.7 × 10^54 (weakest of three attacks)\r\n  attacker speed   1.1 × 10^8 per second (El Capitan, TOP500 June 2026)\r\n  expected time    1.9 × 10^39 years\r\n",
+      "Local 7z key password, pessimistic estimate:\r\n  guesses needed   9.5 × 10^28 (weakest of three attacks)\r\n  attacker speed   1.1 × 10^8 per second (El Capitan, TOP500 June 2026)\r\n  expected time    27 trillion years\r\nWhole bundle: 1.9 × 10^39 years, then 27 trillion years; 1.9 × 10^39 years in total.\r\n",
+      "Opening 7z headers with Argon2id…\r\n",
+      "Unlocking embedded key with Argon2id…\r\n",
+      "Encrypted and verified: $PWD/Documents.7z\r\n"
+    ],
+    "step": 3
+  },
+  {
+    "title": "Verify the portable bundle",
+    "note": "Both passwords are required. The local key is not needed.",
+    "command": "docvault verify Documents.7z",
+    "events": [
+      "The local 7z key password must be different from the 7z password. If both layers share one password, cracking the 7z password opens the whole bundle, and anyone you give the 7z password to also has your local key password.\r\n",
+      "Local 7z key password: ",
+      "\r\n",
+      "Enter 7z password: ",
+      "\r\n",
+      "Opening 7z headers with Argon2id…\r\n",
+      "Unlocking embedded key with Argon2id…\r\n",
+      "Archive verified: $PWD/Documents.7z\r\n"
+    ],
+    "step": 4
+  },
+  {
+    "title": "Restore your documents",
+    "note": "Move originals aside first. Recovery keeps the encrypted bundle.",
+    "command": "mv Documents Documents.original\ndecrypt.sh Documents.7z",
+    "events": [
+      "The local 7z key password must be different from the 7z password. If both layers share one password, cracking the 7z password opens the whole bundle, and anyone you give the 7z password to also has your local key password.\r\n",
+      "Local 7z key password: ",
+      "\r\n",
+      "Enter 7z password: ",
+      "\r\n",
+      "Opening 7z headers with Argon2id…\r\n",
+      "Unlocking embedded key with Argon2id…\r\n",
+      "Decrypted: $PWD/Documents; archive retained.\r\n"
+    ],
+    "step": 5
+  },
+  {
+    "title": "Check the round trip",
+    "note": "Restored content matches the original; the bundle is retained.",
+    "command": "diff -r Documents.original Documents\ncat Documents/notes.txt\nls Documents.7z",
+    "events": [
+      "Sample documents for the DocVault demo.\r\n",
+      "Documents.7z\r\n"
+    ],
+    "step": 5
+  }
+]
